@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import {
-  Button, Divider, SegmentedButtons, Snackbar, Surface, Switch, Text,
+  Button, Divider, SegmentedButtons, Surface, Switch, Text,
 } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useAuth } from '../hooks/useAuth';
+import { AppToast } from '../components/AppToast';
 
 export function SettingsScreen() {
   const { user, logout } = useAuth();
@@ -107,9 +108,7 @@ export function SettingsScreen() {
         </Button>
       </ScrollView>
 
-      <Snackbar visible={!!toastMsg} onDismiss={() => setToastMsg(null)} duration={3000}>
-        {toastMsg}
-      </Snackbar>
+      <AppToast message={toastMsg} onDismiss={() => setToastMsg(null)} duration={3000} />
     </View>
   );
 }

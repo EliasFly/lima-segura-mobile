@@ -7,7 +7,7 @@ import {
   View,
 } from 'react-native';
 import MapView, { Circle, Marker, PROVIDER_DEFAULT } from 'react-native-maps';
-import { Button, Snackbar, Surface, Text } from 'react-native-paper';
+import { Button, Surface, Text } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import * as Location from 'expo-location';
 import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
@@ -18,6 +18,7 @@ import { getErrorMessage } from '../services/api';
 import { INCIDENT_TYPE_LABELS } from '../utils/incidentLabels';
 import type { DashboardStats, HeatmapPoint } from '../types';
 import type { AppStackParamList, MainTabParamList } from '../navigation/AppNavigator';
+import { AppToast } from '../components/AppToast';
 
 type Props = CompositeScreenProps<
   BottomTabScreenProps<MainTabParamList, 'MapRisk'>,
@@ -270,9 +271,7 @@ export function MapRiskScreen({ navigation }: Props) {
         )}
       </ScrollView>
 
-      <Snackbar visible={!!toastMsg} onDismiss={() => setToastMsg(null)} duration={3000}>
-        {toastMsg}
-      </Snackbar>
+      <AppToast message={toastMsg} onDismiss={() => setToastMsg(null)} duration={3000} />
     </View>
   );
 }
