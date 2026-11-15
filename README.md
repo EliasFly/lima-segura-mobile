@@ -6,13 +6,6 @@ App móvil (Expo + React Native + TypeScript) del proyecto **LIMA SEGURA**, el m
 - Web: https://github.com/Kamilo0620/lima-segura-web — desplegada en https://lima-segura-web.vercel.app
 - API en producción: `https://limasegura-backend-54-225-157-83.sslip.io/api/v1`
 
-## Equipo
-
-| Integrante | Rol |
-|---|---|
-| Kamilo | Líder, web y UI/UX |
-| Jasyr | Ingesta de noticias con Gemini y app móvil |
-| Elías | App móvil |
 
 ## Funcionalidades
 
