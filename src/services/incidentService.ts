@@ -80,6 +80,23 @@ export const incidentService = {
     return response.data as { display_name?: string; address?: Record<string, string> };
   },
 
+  /** Plan B sin GPS: convierte una dirección escrita en coordenadas (solo Lima y Callao). */
+  async geocodeAddress(query: string): Promise<{ lat: number; lng: number } | null> {
+    const response = await nominatim.get('/search', {
+      params: {
+        format: 'json',
+        q: query,
+        limit: 1,
+        countrycodes: 'pe',
+        viewbox: '-77.25,-11.55,-76.60,-12.55',
+        bounded: 1,
+      },
+    });
+    const first = Array.isArray(response.data) ? response.data[0] : null;
+    if (!first) return null;
+    return { lat: Number(first.lat), lng: Number(first.lon) };
+  },
+
   async getHeatmap(): Promise<HeatmapPoint[]> {
     const response = await api.get<HeatmapPoint[]>('/incidents/heatmap');
     return Array.isArray(response.data) ? response.data : [];

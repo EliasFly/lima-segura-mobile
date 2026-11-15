@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Linking, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
-import { ActivityIndicator, Button, Divider, Snackbar, Surface, Text } from 'react-native-paper';
+import { ActivityIndicator, Button, Divider, Surface, Text } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { incidentService } from '../services/incidentService';
@@ -8,6 +8,7 @@ import { getErrorMessage } from '../services/api';
 import { INCIDENT_STATUS_LABELS, INCIDENT_TYPE_LABELS } from '../utils/incidentLabels';
 import type { IncidentDetail } from '../types';
 import type { AppStackParamList } from '../navigation/AppNavigator';
+import { AppToast } from '../components/AppToast';
 
 type Props = NativeStackScreenProps<AppStackParamList, 'IncidentDetail'>;
 
@@ -200,14 +201,7 @@ export function IncidentDetailScreen({ route }: Props) {
         </Surface>
       </ScrollView>
 
-      <Snackbar
-        visible={!!toastMsg}
-        onDismiss={() => setToastMsg(null)}
-        duration={3500}
-        style={styles.snackbar}
-      >
-        {toastMsg}
-      </Snackbar>
+      <AppToast message={toastMsg} onDismiss={() => setToastMsg(null)} duration={3500} style={styles.snackbar} />
     </View>
   );
 }

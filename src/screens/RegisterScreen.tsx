@@ -3,12 +3,13 @@ import {
   KeyboardAvoidingView, Platform, ScrollView,
   StyleSheet, TouchableOpacity, View,
 } from 'react-native';
-import { Button, Snackbar, Surface, Text, TextInput } from 'react-native-paper';
+import { Button, Surface, Text, TextInput } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useAuth } from '../hooks/useAuth';
 import { getErrorMessage } from '../services/api';
 import type { AuthStackParamList } from '../navigation/AppNavigator';
+import { AppToast } from '../components/AppToast';
 
 type Props = NativeStackScreenProps<AuthStackParamList, 'Register'>;
 
@@ -164,14 +165,7 @@ export function RegisterScreen({ navigation }: Props) {
         </Surface>
       </ScrollView>
 
-      <Snackbar
-        visible={!!toastMsg}
-        onDismiss={() => setToastMsg(null)}
-        duration={3500}
-        style={styles.snackbar}
-      >
-        {toastMsg}
-      </Snackbar>
+      <AppToast message={toastMsg} onDismiss={() => setToastMsg(null)} duration={3500} style={styles.snackbar} />
     </KeyboardAvoidingView>
   );
 }

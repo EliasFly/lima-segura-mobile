@@ -4,8 +4,7 @@ import {
   StyleSheet, TouchableOpacity, View,
 } from 'react-native';
 import {
-  Button, HelperText, Snackbar,
-  Surface, Text, TextInput,
+  Button, HelperText, Surface, Text, TextInput,
 } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import * as Location from 'expo-location';
@@ -16,6 +15,7 @@ import { getErrorMessage } from '../services/api';
 import { INCIDENT_TYPE_LABELS } from '../utils/incidentLabels';
 import type { IncidentType } from '../types';
 import type { AppStackParamList } from '../navigation/AppNavigator';
+import { AppToast } from '../components/AppToast';
 
 type Props = NativeStackScreenProps<AppStackParamList, 'CreateIncident'>;
 
@@ -59,7 +59,7 @@ export function CreateIncidentScreen({ navigation }: Props) {
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
         setLocWarning(
-          'Permiso de ubicación denegado. Puedes escribir tu distrito y dirección manualmente.',
+          'Permiso de ubicación denegado. Escribe el distrito y la dirección: buscaremos el punto en el mapa.',
         );
         return;
       }
@@ -96,7 +96,7 @@ export function CreateIncidentScreen({ navigation }: Props) {
       }
     } catch {
       setLocWarning(
-        'No se pudo obtener la señal GPS del dispositivo. Ingresa la dirección manualmente.',
+        'No se pudo obtener la señal GPS. Escribe el distrito y la dirección: buscaremos el punto en el mapa.',
       );
     } finally {
       setLocLoading(false);
@@ -165,16 +165,30 @@ export function CreateIncidentScreen({ navigation }: Props) {
       return;
     }
     if (!trimmedDistrict && !trimmedAddress) {
-      setToastMsg('Usa el GPS o ingresa al menos el distrito/dirección del suceso.');
+      setToastMsg('Usa el GPS o escribe el distrito y la dirección del suceso.');
       return;
     }
 
     setSubmitting(true);
     try {
-      const baseSummary = summary.trim();
-      const finalSummary = photoUri
-        ? `${baseSummary ? `${baseSummary}\n` : ''}[Evidencia fotográfica adjunta desde dispositivo móvil]`
-        : baseSummary || undefined;
+      // Si no hay GPS, buscamos la dirección escrita para obtener coordenadas reales.
+      let finalCoords = coords;
+      if (!finalCoords) {
+        const query = [trimmedAddress, trimmedDistrict, 'Lima, Perú'].filter(Boolean).join(', ');
+        try {
+          finalCoords = await incidentService.geocodeAddress(query);
+        } catch {
+          finalCoords = null;
+        }
+        if (!finalCoords) {
+          setToastMsg('No encontramos esa dirección en Lima. Usa el GPS o escríbela con más detalle.');
+          return;
+        }
+        setCoords(finalCoords);
+      }
+
+      // La foto solo se muestra como vista previa: el backend aún no recibe imágenes.
+      const finalSummary = summary.trim() || undefined;
 
       await incidentService.reportIncident({
         incidentType,
@@ -182,8 +196,8 @@ export function CreateIncidentScreen({ navigation }: Props) {
         summary: finalSummary,
         address: trimmedAddress || undefined,
         districtName: trimmedDistrict || undefined,
-        lat: coords?.lat,
-        lng: coords?.lng,
+        lat: finalCoords.lat,
+        lng: finalCoords.lng,
       });
 
       setToastMsg('¡Reporte enviado con éxito!');
@@ -335,6 +349,10 @@ export function CreateIncidentScreen({ navigation }: Props) {
             </HelperText>
           )}
 
+          <HelperText type="info" visible={true} style={styles.photoNote}>
+            La foto es solo una vista previa en tu celular; todavía no se envía al servidor.
+          </HelperText>
+
           {photoUri && (
             <View style={styles.previewBox}>
               <Image source={{ uri: photoUri }} style={styles.previewImage} />
@@ -366,14 +384,7 @@ export function CreateIncidentScreen({ navigation }: Props) {
         </Surface>
       </ScrollView>
 
-      <Snackbar
-        visible={!!toastMsg}
-        onDismiss={() => setToastMsg(null)}
-        duration={3500}
-        style={styles.snackbar}
-      >
-        {toastMsg}
-      </Snackbar>
+      <AppToast message={toastMsg} onDismiss={() => setToastMsg(null)} duration={3500} style={styles.snackbar} />
     </KeyboardAvoidingView>
   );
 }
@@ -430,6 +441,7 @@ const styles = StyleSheet.create({
   cameraRow: { flexDirection: 'row', gap: 10 },
   halfBtn: { flex: 1 },
   previewBox: { alignItems: 'center', marginVertical: 8 },
+  photoNote: { color: '#94A3B8', paddingHorizontal: 0 },
   previewImage: { width: '100%', height: 180, borderRadius: 12, borderWidth: 1, borderColor: '#334155' },
   submitBtn: { marginTop: 16, borderRadius: 12 },
   submitContent: { paddingVertical: 6 },
