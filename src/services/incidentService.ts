@@ -8,6 +8,8 @@ import type {
   IncidentSummary,
   PageResponse,
 } from '../types';
+import { DashboardStats } from '../types';
+import { HeatmapPoint } from '../types';
 
 function normalizePage<T>(raw: any): PageResponse<T> {
   const meta = raw?.page ?? raw ?? {};
@@ -77,4 +79,14 @@ export const incidentService = {
     });
     return response.data as { display_name?: string; address?: Record<string, string> };
   },
+
+  async getHeatmap(): Promise<HeatmapPoint[]> {
+    const response = await api.get<HeatmapPoint[]>('/incidents/heatmap');
+    return Array.isArray(response.data) ? response.data : [];
+  },
+
+  async getDashboardStats(): Promise<DashboardStats> {
+    const response = await api.get<DashboardStats>('/incidents/stats/dashboard');
+    return response.data;
+  }
 };

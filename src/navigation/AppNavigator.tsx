@@ -2,30 +2,96 @@ import React from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { IconButton, Text } from 'react-native-paper';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Text } from 'react-native-paper';
 import { useAuth } from '../hooks/useAuth';
 import { LoginScreen } from '../screens/LoginScreen';
 import { RegisterScreen } from '../screens/RegisterScreen';
 import { IncidentListScreen } from '../screens/IncidentListScreen';
 import { IncidentDetailScreen } from '../screens/IncidentDetailScreen';
 import { CreateIncidentScreen } from '../screens/CreateIncidentScreen';
+import { MapRiskScreen } from '../screens/MapRiskScreen';
+import { SettingsScreen } from '../screens/SettingsScreen';
 
 export type AuthStackParamList = {
   Login: undefined;
   Register: undefined;
 };
 
-export type AppStackParamList = {
+export type MainTabParamList = {
+  MapRisk: undefined;
   IncidentList: undefined;
+  Settings: undefined;
+};
+
+export type AppStackParamList = {
+  MainTabs: undefined;
   IncidentDetail: { incidentId: number };
   CreateIncident: undefined;
 };
 
 const AuthStack = createNativeStackNavigator<AuthStackParamList>();
 const AppStack = createNativeStackNavigator<AppStackParamList>();
+const Tab = createBottomTabNavigator<MainTabParamList>();
+
+function MainTabsNavigator() {
+  return (
+    <Tab.Navigator
+      screenOptions={{
+        headerStyle: { backgroundColor: '#0F172A' },
+        headerTintColor: '#FFFFFF',
+        headerTitleStyle: { fontWeight: 'bold' },
+        tabBarStyle: {
+          backgroundColor: '#0F172A',
+          borderTopColor: '#1E293B',
+          height: 60,
+          paddingBottom: 8,
+          paddingTop: 6,
+        },
+        tabBarActiveTintColor: '#EF4444',
+        tabBarInactiveTintColor: '#64748B',
+      }}
+    >
+      <Tab.Screen
+        name="MapRisk"
+        component={MapRiskScreen}
+        options={{
+          title: 'Mapa de Riesgo',
+          tabBarLabel: 'Mapa',
+          tabBarIcon: ({ color, size }) => (
+            <MaterialCommunityIcons name="map-marker-alert" color={color} size={size} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="IncidentList"
+        component={IncidentListScreen}
+        options={{
+          title: 'Reportes Ciudadanos',
+          tabBarLabel: 'Reportes',
+          tabBarIcon: ({ color, size }) => (
+            <MaterialCommunityIcons name="format-list-bulleted" color={color} size={size} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Settings"
+        component={SettingsScreen}
+        options={{
+          title: 'Configuración',
+          tabBarLabel: 'Ajustes',
+          tabBarIcon: ({ color, size }) => (
+            <MaterialCommunityIcons name="cog-outline" color={color} size={size} />
+          ),
+        }}
+      />
+    </Tab.Navigator>
+  );
+}
 
 export function AppNavigator() {
-  const { isAuthenticated, isLoading, logout } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
 
   if (isLoading) {
     return (
@@ -48,14 +114,9 @@ export function AppNavigator() {
           }}
         >
           <AppStack.Screen
-            name="IncidentList"
-            component={IncidentListScreen}
-            options={{
-              title: 'Lima Segura — Reportes',
-              headerRight: () => (
-                <IconButton icon="logout" iconColor="#F87171" onPress={logout} />
-              ),
-            }}
+            name="MainTabs"
+            component={MainTabsNavigator}
+            options={{ headerShown: false }}
           />
           <AppStack.Screen
             name="IncidentDetail"

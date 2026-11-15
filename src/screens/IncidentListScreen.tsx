@@ -8,11 +8,16 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useFocusEffect } from '@react-navigation/native';
 import { useIncidents } from '../hooks/useIncidents';
+import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
+import type { CompositeScreenProps } from '@react-navigation/native';
 import { INCIDENT_STATUS_LABELS, INCIDENT_TYPE_LABELS } from '../utils/incidentLabels';
 import type { IncidentStatus, IncidentSummary } from '../types';
-import type { AppStackParamList } from '../navigation/AppNavigator';
+import type { AppStackParamList, MainTabParamList } from '../navigation/AppNavigator';
 
-type Props = NativeStackScreenProps<AppStackParamList, 'IncidentList'>;
+type Props = CompositeScreenProps<
+  BottomTabScreenProps<MainTabParamList, 'IncidentList'>,
+  NativeStackScreenProps<AppStackParamList>
+>;
 
 function getStatusColor(status: IncidentStatus): { bg: string; text: string } {
   switch (status) {
