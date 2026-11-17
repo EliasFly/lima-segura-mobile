@@ -445,5 +445,5 @@ const styles = StyleSheet.create({
   previewImage: { width: '100%', height: 180, borderRadius: 12, borderWidth: 1, borderColor: '#334155' },
   submitBtn: { marginTop: 16, borderRadius: 12 },
   submitContent: { paddingVertical: 6 },
-  snackbar: { backgroundColor: '#F1F5F9' },
+  snackbar: { backgroundColor: '#991B1B' },
 });
