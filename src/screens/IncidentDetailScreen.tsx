@@ -258,5 +258,5 @@ const styles = StyleSheet.create({
   errorTitle: { color: '#F1F5F9', fontSize: 16, fontWeight: '700', marginTop: 12 },
   stateText: { color: '#94A3B8', fontSize: 13, textAlign: 'center', marginTop: 6 },
   retryButton: { marginTop: 16, borderRadius: 10 },
-  snackbar: { backgroundColor: '#991B1B' },
+  snackbar: { backgroundColor: '#F1F5F9' },
 });

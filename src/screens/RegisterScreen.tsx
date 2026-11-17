@@ -202,5 +202,5 @@ const styles = StyleSheet.create({
   footer: { flexDirection: 'row', justifyContent: 'center', marginTop: 20 },
   footerText: { color: '#94A3B8', fontSize: 12 },
   footerLink: { color: '#F87171', fontSize: 12, fontWeight: '700' },
-  snackbar: { backgroundColor: '#991B1B' },
+  snackbar: { backgroundColor: '#F1F5F9' },
 });
